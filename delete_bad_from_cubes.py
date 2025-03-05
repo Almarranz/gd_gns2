@@ -13,7 +13,7 @@ from collections import defaultdict
 import numpy as np
 from astropy.table import Table
 import subprocess
-
+import sys
 
 
 # Create a defaultdict with a default
@@ -21,7 +21,8 @@ import subprocess
 field = 20
 cubes_folder = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/'%(field)
 pruebas = '/home/data/alvaro/gns_gd/gns2/F%s/pruebas/'%(field)
-clean = '/home/data/GNS/2021/H/%s/cleaned/'%(field)
+# clean = '/home/data/GNS/2021/H/%s/cleaned/'%(field)
+clean_tmp = '/home/data/alvaro/gns_gd/gns2/F20/tmp/cleaned_tmp/'
 sl = Table.read(cubes_folder + '20_cubes_slices_ext.txt', format = 'ascii')
 
 print(sl.columns)
@@ -55,15 +56,23 @@ for k in list(dic_bad.keys()):
     lh = max(sls_g)
     print(ll,lh)
     
-    command = ['imcopy', clean + f'cube{k}.fits.gz[*,*,{ll}:{lh}]', pruebas + f'cube{k}_cl.fits']
-    
+    command = ['imcopy', clean_tmp + f'cube{k}.fits.gz[*,*,{ll}:{lh}]', clean_tmp + f'cube{k}.fits']
     print(command)
     result = subprocess.run(command, check=True,cwd=pruebas )
+    
+    
+    cl_rm = os.path.join(clean_tmp,  f'cube{k}.fits.gz')
+    os.remove(cl_rm)
+    
+    
+command = 'gzip -d *.gz'
+result = subprocess.run(command, check=True,cwd=clean_tmp, shell = True )
 
-    
-    
-    
-    
+# Check the result (optional)
+if result.returncode == 0:
+    print("Successfully unzipped all .gz files in the directory.")
+else:
+    print("Failed to unzip .gz files.")    
     
     
 

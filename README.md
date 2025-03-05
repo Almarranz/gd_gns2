@@ -23,7 +23,7 @@ There is not yet a defined pipeline. Below are the names and descriptions of som
 ### Initial Geometric Solution
 
 - For the Astromatic machinery to work, the images need an astrometric solution with an accuracy of a few arcseconds.
-- `cubes_for_gd_corrections.fits`: Provides these files with an astrometric solution. It finds matches between the VVVx catalog and the stars present in each chip (using `astroalign` and `sextractor`).
+- `astrometric_solution.py`: Provides these files with an astrometric solution. It finds matches between the VVVx catalog and the stars present in each chip (using `astroalign` and `sextractor`).
 
 
 - Runs `missfits`on cubes to divide them into slices. Then make a .list file containing the paths and names of the slices and feed with it `maxitrack`

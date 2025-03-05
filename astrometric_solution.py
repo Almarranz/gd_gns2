@@ -31,14 +31,17 @@ field = 20
 
 folder = '/home/data/raw/GNS_2/H/Field/%s/'%(field)
 # cubes_aligned = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/'%(field)
-cubes_folder = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/'%(field)
+
 
 pruebas = '/home/data/alvaro/gns_gd/gns2/F%s/pruebas/'%(field)
 sf_folder = '/home/data/GNS/2021/H/%s/data/'%(field)
-clean = '/home/data/GNS/2021/H/%s/cleaned/'%(field)
+# clean = '/home/data/GNS/2021/H/%s/cleaned/'%(field)
 VVV_fol = '/home/data/VVV/'
 vvv_f = '/home/data/alvaro/gns_gd/gns2/VVV_fields/'
 ims = '/home/data/GNS/2021/H/20/ims/'
+scripts = '/home/data/alvaro/gns_gd/gns2/scripts/sex_scripts/'
+clean = '/home/data/alvaro/gns_gd/gns2/F%s/tmp/cleaned_tmp/'%(field)
+tmp = '/home/data/alvaro/gns_gd/gns2/F20/tmp/'
 # %%
 ###########IMPORTANT################
 # list of raw images and raw images are in /home/data/raw/GNS_2/H/Field/20
@@ -64,11 +67,10 @@ data_m = hdu_m[0].data
 dic_sl = {}
 
 image_i = 0
-ch_range = [10,11]
+ch_range = [1,2]
 
 
-with open(cubes_folder + '%s_cubes_and_slices.txt'%(field),'w') as fil:
-    fil.write('Cube_id number_of_slices\n')
+
 for li,l in enumerate(lista):
     
     print(30*'*')
@@ -77,14 +79,13 @@ for li,l in enumerate(lista):
     
     orig_header = fits.getheader(folder + l.strip())
     print(li)
-    with gzip.open(clean + 'cube%s.fits.gz'%(li+1),'rb') as f_in:
-        with open(clean + 'cube%s.fits'%(li+1),'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    
+    # In case the cubes are compressed, uncomment these lines
+    # with gzip.open(clean + 'cube%s.fits.gz'%(li+1),'rb') as f_in:
+    #     with open(clean + 'cube%s.fits'%(li+1),'wb') as f_out:
+    #         shutil.copyfileobj(f_in, f_out)
             
-    # with fits.open(clean + 'cube%s.fits'%(li+1),mode = 'update') as cube:
-    #     cube[0].header = orig_header
-    #     cube.flush()   
-        # cube.writeto(clean + 'cube%s.fits.gz'%(li+1), overwrite = True)
+
     cube = fits.open(clean + 'cube%s.fits'%(li+1),mode = 'update') 
     cube[0].header = orig_header
     cube.flush()   
@@ -101,14 +102,11 @@ for li,l in enumerate(lista):
     naxis2 = cube[0].header['NAXIS2']
     x_off = cube[0].header['CRPIX2']
     y_off = cube[0].header['CRPIX1']
-    # print(cube[0].header)
-    print(wcs)
-    sys.exit(106)
     
+
     print(f'Cube {li+1} has %s slices'%(cube[0].header['NAXIS3']))
     
-    with open(cubes_folder + '%s_cubes_and_slices.txt'%(field),'a') as fil:
-        fil.write('%s %s\n'%(li+1,cube[0].header['NAXIS3']))
+    
     
     if len(vvv_file) < 1:
         use_idx = vvv['J']<900
@@ -147,7 +145,7 @@ for li,l in enumerate(lista):
     yh = (max(y_vvv) + min(y_vvv))/2
     #crop list for each chip
     for chip in range(ch_range[0],ch_range[1]):
-        cubes_aligned = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/chip%s/'%(field,chip)
+        slices_aligned = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/chip%s/'%(field,chip)
 
         
         if (chip == 1):
@@ -166,7 +164,7 @@ for li,l in enumerate(lista):
         
         
         try:
-            os.remove(pruebas + f'cut_c{chip}.fits')
+            os.remove(tmp + f'cut_c{chip}.fits')
         except:
             print(f'NO file cut_c{chip}.fits yet')
 
@@ -179,21 +177,21 @@ for li,l in enumerate(lista):
         #     print('NO file')
        
         if chip == 1:
-            command = ['fitscopy', clean + 'cube%s.fits[1:2048,1:2048,1:1]'%(li+1),pruebas  + f'cut_c{chip}.fits' ]
+            command = ['fitscopy', clean + 'cube%s.fits[1:2048,1:2048,1:1]'%(li+1),tmp  + f'cut_c{chip}.fits' ]
         elif chip == 2:
-            command = ['fitscopy', clean + 'cube%s.fits[2049:4096,1:2048,1:1]'%(li+1),pruebas  + f'cut_c{chip}.fits' ]
+            command = ['fitscopy', clean + 'cube%s.fits[2049:4096,1:2048,1:1]'%(li+1),tmp  + f'cut_c{chip}.fits' ]
         elif chip == 3:
-            command = ['fitscopy', clean + 'cube%s.fits[2049:4096,2049:4096,1:1]'%(li+1),pruebas  + f'cut_c{chip}.fits' ]
+            command = ['fitscopy', clean + 'cube%s.fits[2049:4096,2049:4096,1:1]'%(li+1),tmp  + f'cut_c{chip}.fits' ]
         elif chip == 4:
-            command = ['fitscopy', clean + 'cube%s.fits[1:2048,2049:4096,1:1]'%(li+1),pruebas  + f'cut_c{chip}.fits' ]
+            command = ['fitscopy', clean + 'cube%s.fits[1:2048,2049:4096,1:1]'%(li+1), tmp  + f'cut_c{chip}.fits' ]
         
         result = subprocess.run(command, check=True)
     
        
-        command = ['source-extractor', pruebas  + f'cut_c{chip}.fits', '-CATALOG_NAME', pruebas + f'xyf_c{chip}_f{field}.cat',
-                   '-PARAMETERS_NAME', pruebas + 'default.param']
+        command = ['source-extractor', tmp  + f'cut_c{chip}.fits', '-CATALOG_NAME', tmp + f'xyf_c{chip}_f{field}.cat',
+                   '-PARAMETERS_NAME', scripts + 'basicASol.param']
         result = subprocess.run(command, check=True)
-        os.remove(pruebas + f'cut_c{chip}.fits')
+        os.remove(tmp + f'cut_c{chip}.fits')
         
         
         # gns = Table.read(sf_folder + 'dejitter_stars_%s_%s.txt'%(chip,li+1), format = 'ascii')
@@ -203,7 +201,7 @@ for li,l in enumerate(lista):
         # xy_gns = np.c_[x_gns,y_gns]
         # np.savetxt(pruebas + 'sf_f20_xy.txt',xy_gns)
         
-        sources = Table.read(pruebas + f'xyf_c{chip}_f{field}.cat', format = 'ascii')
+        sources = Table.read(tmp + f'xyf_c{chip}_f{field}.cat', format = 'ascii')
         
         sources.sort('FLUX_MAX')
         sources.reverse()
@@ -270,17 +268,13 @@ for li,l in enumerate(lista):
         # Print or return the indices
         print('Comon stars in the C%s = %s'%(chip,len(indices)))
         vvv_com = vvv_overlap[idx][indices]
-# =============================================================================
-#         vvv_com.write(pruebas + 'vvv_common_c%s.txt'%(chip), format = 'ascii', overwrite = True)
-#         
-# =============================================================================
+        vvv_com.write(pruebas + 'vvv_common_c%s.txt'%(chip), format = 'ascii', overwrite = True)
+        
         
         gns_com_xy = Table(pos_img, names = ('x','y'))
         vvv_com_xy = Table(pos_img_t, names = ('x','y'))
-# =============================================================================
-#         gns_com_xy.write(pruebas + 'gns_c%s_com.txt'%(chip), format = 'ascii',overwrite=True)
-#         vvv_com_xy.write(pruebas + 'vvv_c%s_com.txt'%(chip), format = 'ascii',overwrite=True)
-# =============================================================================
+        gns_com_xy.write(pruebas + 'gns_c%s_com.txt'%(chip), format = 'ascii',overwrite=True)
+        vvv_com_xy.write(pruebas + 'vvv_c%s_com.txt'%(chip), format = 'ascii',overwrite=True)
         
     
         vvv_com_ad = SkyCoord(ra = vvv_com['ra'],dec = vvv_com['dec'],unit = 'degree')
@@ -305,14 +299,12 @@ for li,l in enumerate(lista):
                     if card.keyword in header:
                         header[card.keyword] = card.value
                 header['FILTER'] = 'H' # this keyword is needed for Scamp.
-# =============================================================================
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
-#                              data = data, header = header, overwrite= True)
-#                 # fits.writeto(cubes_aligned + '%s_mask_c%s.%04d.fits'%(field,chip,image_i),
-#                 #              data = m_data, header = header, overwrite= True)
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
-#                              data = m_data, header = header, overwrite= True)
-# =============================================================================
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                             data = data, header = header, overwrite= True)
+                # fits.writeto(cubes_aligned + '%s_mask_c%s.%04d.fits'%(field,chip,image_i),
+                #              data = m_data, header = header, overwrite= True)
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
+                             data = m_data, header = header, overwrite= True)
             if chip == 2:
                 data = data_cube[i][0:2048,2048:]
                 wcs_header = wcs_new.to_header()
@@ -388,64 +380,13 @@ for li,l in enumerate(lista):
         image_i -=  cube[0].header['NAXIS3']
     print(30*'+',f'\nAfter cube{li}, index ={image_i} \n',30*'+')
     dic_sl['l%s'%(li)] = cube[0].header['NAXIS3']
-    os.remove(clean + 'cube%s.fits'%(li+1))
-    
-    sys.exit(373)
+# =============================================================================
+#     os.remove(clean + 'cube%s.fits'%(li+1))
+# =============================================================================
    
     # if li == 0:
     #     break    
 sys.exit(296)
-# %%
-# #MISSFITS
-
-# for chip in range(ch_range[0],ch_range[1]):
-#     command = ['missfits', cubes_aligned + '%s_image_c%s'%(field,chip), '-c', 'conf.missfits']
-    
-#     try:
-#         # Run the command
-        
-#         result = subprocess.run(command, check=True)
-#         # Print standard output and error
-#         print("Command Output:")
-#         print(result.stdout)
-#         print("Command Error (if any):")
-#         print(result.stderr)
-    
-#     except subprocess.CalledProcessError as e:
-#         # Handle errors
-#         print(f"Error: {e}")
-#         print(f"Standard Output: {e.stdout}")
-#         print(f"Standard Error: {e.stderr}")
-
-
-# # %%
-# for chip in range(ch_range[0],ch_range[1]):
-#     command = ['missfits', cubes_aligned + '%s_mask_c%s'%(field,chip), '-c', 'conf.missfits']
-    
-#     try:
-#         # Run the command
-        
-#         result = subprocess.run(command, check=True)
-#         # Print standard output and error
-#         print("Command Output:")
-#         print(result.stdout)
-#         print("Command Error (if any):")
-#         print(result.stderr)
-    
-#     except subprocess.CalledProcessError as e:
-#         # Handle errors
-#         print(f"Error: {e}")
-#         print(f"Standard Output: {e.stdout}")
-#         print(f"Standard Error: {e.stderr}")
-# answer = input('Did you check the generated cubes? \nIf yes and everthing is alright, type "y".\nOtherwise do so and elimate bad slices (see delete_bad.py')
-# if answer == 'y':
-#     print('Running sextractor, scamp and SWarp')
-# else:
-#     sys.exit(6*'😡'+'\nCHECK THEM!!!\n'+6*'😡')
-
-
-
-
 
 
 
