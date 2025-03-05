@@ -64,7 +64,7 @@ data_m = hdu_m[0].data
 dic_sl = {}
 
 image_i = 0
-ch_range = [4,5]
+ch_range = [10,11]
 
 
 with open(cubes_folder + '%s_cubes_and_slices.txt'%(field),'w') as fil:
@@ -102,7 +102,8 @@ for li,l in enumerate(lista):
     x_off = cube[0].header['CRPIX2']
     y_off = cube[0].header['CRPIX1']
     # print(cube[0].header)
-    
+    print(wcs)
+    sys.exit(106)
     
     print(f'Cube {li+1} has %s slices'%(cube[0].header['NAXIS3']))
     
