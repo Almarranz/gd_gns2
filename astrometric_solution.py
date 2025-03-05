@@ -291,9 +291,7 @@ for li,l in enumerate(lista):
                 data = data_cube[i][0:2048,0:2048]# Use i+1 since the first is the PrimaryHDU
                 wcs_header = wcs_new.to_header()                
                 m_data = m_cube[i][0:2048,0:2048]
-                # for card in wcs_header.cards:
-                #     # If the key already exists, it will be replaced, otherwise it will be added
-                #     header[card.keyword] = card.value
+               
                 for card in wcs_header.cards:
                     # Only replace the existing keyword in the header if it exists
                     if card.keyword in header:
@@ -301,8 +299,7 @@ for li,l in enumerate(lista):
                 header['FILTER'] = 'H' # this keyword is needed for Scamp.
                 fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
                              data = data, header = header, overwrite= True)
-                # fits.writeto(cubes_aligned + '%s_mask_c%s.%04d.fits'%(field,chip,image_i),
-                #              data = m_data, header = header, overwrite= True)
+                
                 fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
                              data = m_data, header = header, overwrite= True)
             if chip == 2:
@@ -310,32 +307,25 @@ for li,l in enumerate(lista):
                 wcs_header = wcs_new.to_header()
                 m_data = m_cube[i][0:2048,2048:]
                 
-                # for card in wcs_header.cards:
-                #     # If the key already exists, it will be replaced, otherwise it will be added
-                #     header[card.keyword] = card.value
+             
                 for card in wcs_header.cards:
                     # Only replace the existing keyword in the header if it exists
                     if card.keyword in header:
                         header[card.keyword] = card.value
                 header['FILTER'] = 'H'        
-# =============================================================================
-# 
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
-#                              data = data, header = header, overwrite= True)
-#                 # fits.writeto(cubes_aligned + '%s_mask_c%s.%04d.fits'%(field,chip,image_i),
-#                 #              data = m_data, header = header, overwrite= True)
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
-#                              data = m_data, header = header, overwrite= True)
-# =============================================================================
+
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                             data = data, header = header, overwrite= True)
+                #
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
+                             data = m_data, header = header, overwrite= True)
            
             if chip == 3:
                 data = data_cube[i][2048:,2048:]
                 wcs_header = wcs_new.to_header()
                 
                 m_data = m_cube[i][2048:,2048:]
-                # for card in wcs_header.cards:
-                #     # If the key already exists, it will be replaced, otherwise it will be added
-                #     header[card.keyword] = card.value
+                
                 for card in wcs_header.cards:
                     # Only replace the existing keyword in the header if it exists
                     if card.keyword in header:
@@ -343,14 +333,10 @@ for li,l in enumerate(lista):
                 
                 header['FILTER'] = 'H'        
 
-# =============================================================================
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
-#                              data = data, header = header, overwrite= True)
-#                 # fits.writeto(cubes_aligned + '%s_mask_c%s.%04d.fits'%(field,chip,image_i),
-#                 #              data = m_data, header = header, overwrite= True)
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
-#                              data = m_data, header = header, overwrite= True)
-# =============================================================================
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                             data = data, header = header, overwrite= True)
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
+                             data = m_data, header = header, overwrite= True)
               
                
             if chip == 4:
@@ -358,9 +344,7 @@ for li,l in enumerate(lista):
                 wcs_header = wcs_new.to_header()
                 
                 m_data = m_cube[i][2048:,0:2048]
-                # for card in wcs_header.cards:
-                #     # If the key already exists, it will be replaced, otherwise it will be added
-                #     header[card.keyword] = card.value
+                
                 for card in wcs_header.cards:
                     # Only replace the existing keyword in the header if it exists
                     if card.keyword in header:
@@ -368,15 +352,12 @@ for li,l in enumerate(lista):
                 
                 header['FILTER'] = 'H'        
                 
-                # Create an ImageHDU with the data and the corresponding header
-                # image_hdu = fits.ImageHDU(data=data, header=wcs_header)
-# =============================================================================
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
-#                              data = data, header = header, overwrite= True)
-#                 
-#                 fits.writeto(cubes_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
-#                 data = m_data, header = header, overwrite= True)
-# =============================================================================
+                
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                             data = data, header = header, overwrite= True)
+                
+                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
+                data = m_data, header = header, overwrite= True)
         image_i -=  cube[0].header['NAXIS3']
     print(30*'+',f'\nAfter cube{li}, index ={image_i} \n',30*'+')
     dic_sl['l%s'%(li)] = cube[0].header['NAXIS3']
