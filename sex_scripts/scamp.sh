@@ -13,7 +13,7 @@ foreach file ($*)
   # Define the full directory path for each plot type
   
    
-  set chip = "chip1"
+  set chip = "all_chips"
   set slices = "/home/data/alvaro/gns_gd/gns2/F20/cubes_aligned/slices/$chip/"
   set out_put =  "/home/data/alvaro/gns_gd/gns2/F20/cubes_aligned/slices/sex_slices/$chip/"
   set plot_dir = "/home/data/alvaro/gns_gd/gns2/F20/cubes_aligned/slices/scamp_plots/$chip/"

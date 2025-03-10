@@ -26,7 +26,7 @@ set sexxml = $rfile:r"_sex.xml"
   set psf_plots = "/home/data/alvaro/gns_gd/gns2/F20/cubes_aligned/slices/psfex_plots/$chip/"
 
 # run sextractor - first pass - to feed PSFex
-    source-extractor ${slices}$file -c prepsfex.sex -CATALOG_NAME ${out_put}$cat -SATUR_LEVEL 50000 -XML_NAME ${out_put}$prepsfexml -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE ${slices}$mask
+    source-extractor ${slices}$rfile -c prepsfex.sex -CATALOG_NAME ${out_put}$cat -SATUR_LEVEL 50000 -XML_NAME ${out_put}$prepsfexml -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE ${slices}$mask 
 
 # Compute the PSF with PSFex
 
@@ -35,7 +35,7 @@ set sexxml = $rfile:r"_sex.xml"
 
 # Extract final photometry
 
-    source-extractor ${slices}$file -c defaultpsf.sex -CATALOG_NAME ${out_put}$cat -PSF_NAME ${out_put}$psf -SATUR_LEVEL 50000 -XML_NAME ${out_put}$sexxml -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE ${slices}$mask 
+    source-extractor ${slices}$rfile -c defaultpsf.sex -CATALOG_NAME ${out_put}$cat -PSF_NAME ${out_put}$psf -SATUR_LEVEL 50000 -XML_NAME ${out_put}$sexxml -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE ${slices}$mask 
     
 end
 

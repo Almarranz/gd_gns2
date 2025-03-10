@@ -18,18 +18,21 @@ There is not yet a defined pipeline. Below are the names and descriptions of som
   - **Note 2**: You can combine this inspection with `maxitract`. Although it doesn't work perfectly, it can help detect elusive bad slices. See `maxitract_chips.sh` and `maxitract_bad_slices.py`.
 
     > `maxitract_chips.sh`: Runs `maxitract` on FITS slices for different chips and renames the output file to `maxitract.output`. This script can be found in the GNS1 folder.
+    
     > `maxitract_bad_slices.py`: Combines all `maxitract` output files into a single list. This is convenient for comparing bad slices selected by `maxitract` with those selected by the operator.
+
+___
+- Runs `missfits`on cubes to divide them into slices. Then make a .list file containing the paths and names of the slices and feed with it `maxitrack`
+- **% missfits -d > default.missfits** generates de default configurataion file. 
+- On the configuration file you can set `OUTFILE_TYPE  SPLIT` and `SAVE_TYPE NEW`. This would slice the MEF and conserve the original file, while saving the slices under a new name.
+- Make a .list files with then names and tha absolutes paths of the new genareted *miss* slices: ** ls *.miss.fits | xargs realpath > part[1,1]_c[1,2,3,4]_fits.list **
+___
 
 ### Initial Geometric Solution
 
 - For the Astromatic machinery to work, the images need an astrometric solution with an accuracy of a few arcseconds.
 - `astrometric_solution.py`: Provides these files with an astrometric solution. It finds matches between the VVVx catalog and the stars present in each chip (using `astroalign` and `sextractor`).
-
-
-- Runs `missfits`on cubes to divide them into slices. Then make a .list file containing the paths and names of the slices and feed with it `maxitrack`
-- **% missfits -d > default.missfits** generates de default configurataion file. 
-- On the configuration file you can set `OUTFILE_TYPE  SPLIT` and `SAVE_TYPE NEW`. This would slice the MEF and conserve the original file, while saving the slices under a new name.
-- Make a .list files with then names and tha absolutes paths of the new genareted *miss* slices: ** ls *.miss.fits | xargs realpath > part[1,1]_c[1,2,3,4]_fits.list **
+- Uses `basicASolution.param` as confifguration file for `sextractor`.
 
 
 ## Astromatic
@@ -41,7 +44,8 @@ There is not yet a defined pipeline. Below are the names and descriptions of som
 - Finally we run `sextracto` agaim, feeded with the vairable psf
 
 ### SCAMP
-- `./scamp.sh`
+- ⚠️ `./scamp.sh` THIS IS NOT WORKING!!! ⚠️
+- for using scamp `scamp *cat`. 
 - We use `scamp` to calculate the variability of the *pixel scale* acrros the chip, the geomtric distortion
 - It has to be use in the individuals fits files.
 

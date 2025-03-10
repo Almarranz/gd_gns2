@@ -67,7 +67,7 @@ data_m = hdu_m[0].data
 dic_sl = {}
 
 image_i = 0
-ch_range = [1,2]
+ch_range = [1,5]
 
 
 
