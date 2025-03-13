@@ -70,7 +70,7 @@ image_i = 0
 ch_range = [1,5]
 
 
-
+last_id = 0
 for li,l in enumerate(lista):
     
     print(30*'*')
@@ -93,7 +93,7 @@ for li,l in enumerate(lista):
     
     if li>0:
         image_i = image_i + dic_sl[f'l{li-1}']
-        print(30*'+',f'\nThe index is {image_i}\n',30*'+')
+        print(30*'+',f'\nThe index is {last_id}\n',30*'+')
     
     
     
@@ -145,7 +145,8 @@ for li,l in enumerate(lista):
     yh = (max(y_vvv) + min(y_vvv))/2
     #crop list for each chip
     for chip in range(ch_range[0],ch_range[1]):
-        slices_aligned = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/chip%s/'%(field,chip)
+        # slices_aligned = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/chip%s/'%(field,chip)
+        slices_aligned = '/home/data/alvaro/gns_gd/gns2/F%s/cubes_aligned/slices/all_chips/'%(field)
 
         
         if (chip == 1):
@@ -297,10 +298,10 @@ for li,l in enumerate(lista):
                     if card.keyword in header:
                         header[card.keyword] = card.value
                 header['FILTER'] = 'H' # this keyword is needed for Scamp.
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.fits'%(field,image_i,chip),
                              data = data, header = header, overwrite= True)
                 
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.weight.fits'%(field,image_i,chip),
                              data = m_data, header = header, overwrite= True)
             if chip == 2:
                 data = data_cube[i][0:2048,2048:]
@@ -314,12 +315,11 @@ for li,l in enumerate(lista):
                         header[card.keyword] = card.value
                 header['FILTER'] = 'H'        
 
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.fits'%(field,image_i,chip),
                              data = data, header = header, overwrite= True)
-                #
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
-                             data = m_data, header = header, overwrite= True)
-           
+                
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.weight.fits'%(field,image_i,chip),
+                             data = m_data, header = header, overwrite= True)           
             if chip == 3:
                 data = data_cube[i][2048:,2048:]
                 wcs_header = wcs_new.to_header()
@@ -333,9 +333,10 @@ for li,l in enumerate(lista):
                 
                 header['FILTER'] = 'H'        
 
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.fits'%(field,image_i,chip),
                              data = data, header = header, overwrite= True)
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
+                
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.weight.fits'%(field,image_i,chip),
                              data = m_data, header = header, overwrite= True)
               
                
@@ -353,11 +354,13 @@ for li,l in enumerate(lista):
                 header['FILTER'] = 'H'        
                 
                 
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.fits'%(field,chip,image_i),
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.fits'%(field,image_i,chip),
                              data = data, header = header, overwrite= True)
                 
-                fits.writeto(slices_aligned + '%s_image_c%s.%04d.weight.fits'%(field,chip,image_i),
-                data = m_data, header = header, overwrite= True)
+                fits.writeto(slices_aligned + '%s_image_%04d.%02d.weight.fits'%(field,image_i,chip),
+                             data = m_data, header = header, overwrite= True)
+                
+        last_id = image_i
         image_i -=  cube[0].header['NAXIS3']
     print(30*'+',f'\nAfter cube{li}, index ={image_i} \n',30*'+')
     dic_sl['l%s'%(li)] = cube[0].header['NAXIS3']
@@ -367,7 +370,24 @@ for li,l in enumerate(lista):
    
     # if li == 0:
     #     break    
-sys.exit(296)
+# sys.exit(296)
+
+
+for im in range(1,last_id+1):
+        command = f'missfits -SAVE_TYPE REPLACE -OUTFILE_TYPE MULTI -WRITE_XML N -NEXTENSIONS_MIN 4 -SPLIT_SUFFIX .%02d.weight.fits {field}_image_{im:04d}'
+        result = subprocess.run(command, check=True, cwd = slices_aligned,shell = True)
+        
+        rn_c =  f'mv {field}_image_{im:04d}.fits {field}_image_{im:04d}.weight.fits'
+        res_rn = subprocess.run(rn_c, check=True, cwd = slices_aligned,shell = True)
+                
+
+for im in range(1,last_id+1):
+        command = f'missfits -SAVE_TYPE REPLACE -OUTFILE_TYPE MULTI -WRITE_XML N -NEXTENSIONS_MIN 4 -SPLIT_SUFFIX .%02d.fits {field}_image_{im:04d}'
+        result = subprocess.run(command, check=True, cwd = slices_aligned,shell = True)
+
+
+   
+
 
 
 
