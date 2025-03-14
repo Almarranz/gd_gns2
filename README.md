@@ -51,9 +51,14 @@ ___
 
 
 
+### SWARM
 
+- Run `SWarm` over each individual fit file, and extentions.
+- ` ls *[0-9].fits | sed 's/.fits//g' | awk '{for (i=1;i<=4;++i) print "SWarp -WEIGHT_SUFFIX .weight.fits",$1".fits["i"];mv coadd.fits indiv_warp_gal/"$1".0"i".fits"}' | sh`
 
-
+> Note: Should we use the weight image selecting by extention as well?:
+ >> - ` ls *[0-9].fits | sed 's/.fits//g' | awk '{for (i=1;i<=4;++i) print "SWarp -WEIGHT_SUFFIX .weight.fits["i"]",$1".fits["i"];mv coadd.fits indiv_warp_gal/"$1".0"i".fits"}' | sh`
+ 
 
 
 
